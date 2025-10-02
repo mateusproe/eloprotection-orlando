@@ -1,0 +1,13 @@
+﻿# dependências e builds
+node_modules/
+dist/
+
+# configs locais
+.vscode/
+.env
+
+# lixo de SO
+.DS_Store
+
+# logs
+*.log
