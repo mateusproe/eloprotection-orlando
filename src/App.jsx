@@ -343,9 +343,12 @@ function App() {
             }`}>
               <Button 
                 onClick={handleRequestQuote}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-4 rounded-full text-lg btn-pulse btn-interactive ripple magnetic glow-effect"
+                className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-6 sm:py-5 md:py-4 rounded-full text-lg leading-snug whitespace-pre-line btn-pulse btn-interactive ripple magnetic glow-effect"
               >
-                Solicite uma Visita Técnica Gratuita em Indaiatuba
+                Solicite uma Visita Técnica Gratuita
+                <br className="sm:hidden" />
+                <span className="hidden sm:inline">&nbsp;</span>
+                em Indaiatuba
               </Button>
             </div>
           </div>
