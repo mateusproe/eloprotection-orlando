@@ -11,6 +11,9 @@ import banner3Video from '../assets/videos/banner3.mp4'
 const HeroCarousel = ({ onRequestQuote }) => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
+  const [viewportHeight, setViewportHeight] = useState(() => (
+    typeof window !== 'undefined' ? window.innerHeight : 0
+  ))
 
   // Detect mobile screen size
   useEffect(() => {
@@ -22,6 +25,23 @@ const HeroCarousel = ({ onRequestQuote }) => {
     window.addEventListener('resize', checkMobile)
     
     return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Keep viewport height in sync (fixes mobile Safari 100vh issues)
+  useEffect(() => {
+    const updateViewportHeight = () => {
+      setViewportHeight(window.innerHeight)
+    }
+
+    updateViewportHeight()
+
+    window.addEventListener('resize', updateViewportHeight)
+    window.addEventListener('orientationchange', updateViewportHeight)
+    
+    return () => {
+      window.removeEventListener('resize', updateViewportHeight)
+      window.removeEventListener('orientationchange', updateViewportHeight)
+    }
   }, [])
 
   const allSlides = [
@@ -87,7 +107,13 @@ const HeroCarousel = ({ onRequestQuote }) => {
   }
 
   return (
-    <div className="relative w-full min-h-[100svh] md:h-screen overflow-hidden">
+    <div
+      className="relative w-full min-h-screen min-h-[100svh] md:h-screen overflow-hidden"
+      style={{
+        height: viewportHeight ? `${viewportHeight}px` : undefined,
+        minHeight: viewportHeight ? `${viewportHeight}px` : undefined
+      }}
+    >
       {/* Slides */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => (
