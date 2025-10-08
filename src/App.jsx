@@ -215,7 +215,7 @@ function App() {
                   >
                     <Shield className="w-12 h-12 text-green-600 mx-auto mb-4 float-animation" />
                     <h3 className="font-semibold mb-2">Produto Patenteado</h3>
-                    <p className="text-sm text-muted-foreground">Tecnologia exclusiva sem concorrência direta</p>
+                    <p className="text-sm text-muted-foreground">Tecnologia exclusiva sem concorrência direta.</p>
                   </div>
                   <div 
                     ref={setStaggerRef(1)}
@@ -235,7 +235,7 @@ function App() {
                   >
                     <Settings className="w-12 h-12 text-green-600 mx-auto mb-4 float-animation" style={{ animationDelay: '0.6s' }} />
                     <h3 className="font-semibold mb-2">Alta Resistência</h3>
-                    <p className="text-sm text-muted-foreground">– Material durável e reutilizável</p>
+                    <p className="text-sm text-muted-foreground">Material durável e reutilizável.</p>
                   </div>
                   <div 
                     ref={setStaggerRef(3)}
@@ -245,7 +245,7 @@ function App() {
                   >
                     <Wrench className="w-12 h-12 text-green-600 mx-auto mb-4 float-animation" style={{ animationDelay: '0.9s' }} />
                     <h3 className="font-semibold mb-2">Atendimento Local</h3>
-                    <p className="text-sm text-muted-foreground">Unidade exclusiva em Indaiatuba</p>
+                    <p className="text-sm text-muted-foreground">Unidade exclusiva em Indaiatuba.</p>
                   </div>
                 </div>
 
@@ -297,7 +297,7 @@ function App() {
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-primary">Visita Técnica</h3>
                 <p className="text-muted-foreground">
-                  Vamos até a sua obra para avaliar as necessidades específicas e planejar a melhor solução de proteção
+                  Vamos até a sua obra para avaliar as necessidades específicas e planejar a melhor solução de proteção.
                 </p>
               </div>
 
@@ -309,7 +309,7 @@ function App() {
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-primary">Instalação Profissional</h3>
                 <p className="text-muted-foreground">
-                  Nossa equipe especializada realiza a instalação completa do sistema de proteção de forma rápida e eficiente
+                  Nossa equipe especializada realiza a instalação completa do sistema de proteção de forma rápida e eficiente.
                 </p>
               </div>
 
@@ -321,7 +321,7 @@ function App() {
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-primary">Acompanhamento</h3>
                 <p className="text-muted-foreground">
-                  Realizamos visitas periódicas para verificar o estado da proteção e garantir que tudo esteja funcionando perfeitamente
+                  Realizamos visitas periódicas para verificar o estado da proteção e garantir que tudo esteja funcionando perfeitamente.
                 </p>
               </div>
 

@@ -51,7 +51,7 @@ const HeroCarousel = ({ onRequestQuote }) => {
       src: galleryNewImage,
       alt: 'Proteção em ambiente comercial',
       title: 'Investimento inteligente:',
-      subtitle: 'Pisos perfeitos ao final da sua obra.'
+      subtitle: 'Pisos integros ao final da sua obra'
     }
   ]
 
@@ -87,7 +87,7 @@ const HeroCarousel = ({ onRequestQuote }) => {
   }
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full min-h-[100svh] md:h-screen overflow-hidden">
       {/* Slides */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => (
@@ -123,15 +123,15 @@ const HeroCarousel = ({ onRequestQuote }) => {
       {/* Content */}
       <div className="absolute inset-0 flex items-center justify-center z-10">
         <div className="text-center text-white px-4 max-w-4xl">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
             {slides[currentSlide].title}
           </h1>
-          <p className="text-xl md:text-2xl mb-8 animate-fade-in-delay">
+          <p className="text-lg sm:text-xl md:text-2xl mb-8 animate-fade-in-delay">
             {slides[currentSlide].subtitle}
           </p>
           <Button 
             onClick={onRequestQuote}
-            className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-4 rounded-full text-lg hover:scale-105 transition-transform duration-200"
+            className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-full text-base sm:text-lg hover:scale-105 transition-transform duration-200"
           >
             Solicitar Orçamento
           </Button>

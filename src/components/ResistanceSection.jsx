@@ -1,5 +1,5 @@
 ﻿import { useState, useRef, useEffect } from 'react'
-import { Play, Pause, CloudRain, Truck, Flame, HardHat } from 'lucide-react'
+import { Play, Pause, CloudRain, Forklift, Flame, HardHat } from 'lucide-react'
 
 // Import resistance videos
 import rainVideo from '../assets/videos/rain-resistance-1920x1080.mp4'
@@ -15,26 +15,22 @@ const ResistanceSection = () => {
   const resistanceTests = [
     {
       video: rainVideo,
-      title: 'Resistência à Chuva',
-      description: '100% impermeável',
+      title: 'Excelente performance na vedação de líquidos.',
       icon: CloudRain
     },
     {
       video: heavyMachineryVideo,
-      title: 'Maquinário Pesado',
-      description: 'Suporta equipamentos industriais',
-      icon: Truck
+      title: 'Pronto para o peso das operações da sua obra.',
+      icon: Forklift
     },
     {
       video: fireVideo,
-      title: 'Resistência ao Fogo',
-      description: 'Material ignífugo',
+      title: 'Excepcional resistência à abrasão.',
       icon: Flame
     },
     {
       video: heavyWorkVideo,
-      title: 'Obra Pesada',
-      description: 'Resistente a impactos',
+      title: 'Alta eficácia contra impactos mecânicos.',
       icon: HardHat
     }
   ]
@@ -140,9 +136,6 @@ const ResistanceSection = () => {
                   <h3 className="text-sm font-semibold text-white mb-1">
                     {test.title}
                   </h3>
-                  <p className="text-xs text-gray-300">
-                    {test.description}
-                  </p>
                 </div>
               </div>
             )

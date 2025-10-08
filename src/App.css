@@ -114,8 +114,13 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply w-full max-w-full overflow-x-hidden;
+    touch-action: manipulation;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-x-hidden;
+    touch-action: manipulation;
   }
 }
 
@@ -801,4 +806,3 @@ a:focus-visible {
     display: none;
   }
 }
-
