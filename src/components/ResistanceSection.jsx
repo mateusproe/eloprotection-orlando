@@ -1,7 +1,6 @@
-﻿import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Play, Pause, CloudRain, Forklift, Flame, HardHat } from 'lucide-react'
 
-// Import resistance videos
 import rainVideo from '../assets/videos/rain-resistance-1920x1080.mp4'
 import heavyMachineryVideo from '../assets/videos/heavy-machinery-1920x1080.mp4'
 import fireVideo from '../assets/videos/fire-resistance-1920x1080.mp4'
@@ -15,27 +14,26 @@ const ResistanceSection = () => {
   const resistanceTests = [
     {
       video: rainVideo,
-      title: 'Excelente performance na vedação de líquidos.',
+      title: 'Outstanding liquid containment performance.',
       icon: CloudRain
     },
     {
       video: heavyMachineryVideo,
-      title: 'Pronto para o peso das operações da sua obra.',
+      title: 'Engineered to handle heavy machinery traffic.',
       icon: Forklift
     },
     {
       video: fireVideo,
-      title: 'Excepcional resistência à abrasão.',
+      title: 'Exceptional resistance to abrasion and flame.',
       icon: Flame
     },
     {
       video: heavyWorkVideo,
-      title: 'Alta eficácia contra impactos mecânicos.',
+      title: 'High performance against mechanical impacts.',
       icon: HardHat
     }
   ]
 
-  // Auto-advance videos
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentVideo((prev) => (prev + 1) % resistanceTests.length)
@@ -44,7 +42,6 @@ const ResistanceSection = () => {
     return () => clearInterval(timer)
   }, [resistanceTests.length])
 
-  // Handle video play/pause
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
       if (video) {
@@ -72,8 +69,7 @@ const ResistanceSection = () => {
   }
 
   return (
-    <section id="resistencia" className="py-20 bg-background relative overflow-hidden">
-      {/* Background video */}
+    <section id="site-challenges" className="py-20 bg-background relative overflow-hidden">
       <div className="absolute inset-0 z-0">
         {resistanceTests.map((test, index) => (
           <video
@@ -98,14 +94,13 @@ const ResistanceSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
-            Desafios da Obra
+            Jobsite Challenges We Withstand
           </h2>
           <div className="text-xl md:text-2xl text-white font-semibold mb-8">
-            <p className="mb-2">Os desafios de sua obra que impactam no seu piso, a gente protege!</p>
+            <p className="mb-2">Every challenge that threatens your surfaces is one we are built to handle.</p>
           </div>
         </div>
 
-        {/* Video controls - Hidden on mobile */}
         <div className="hidden md:flex justify-center mb-8">
           <button
             onClick={togglePlayPause}
@@ -115,7 +110,6 @@ const ResistanceSection = () => {
           </button>
         </div>
 
-        {/* Resistance cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3 max-w-3xl mx-auto">
           {resistanceTests.map((test, index) => {
             const Icon = test.icon
@@ -142,14 +136,13 @@ const ResistanceSection = () => {
           })}
         </div>
 
-        {/* Progress indicator */}
         <div className="flex justify-center mt-8 space-x-2">
           {resistanceTests.map((_, index) => (
             <div
               key={index}
               className={`h-1 w-12 rounded-full transition-all duration-300 ${
-                index === currentVideo 
-                  ? 'bg-green-400' 
+                index === currentVideo
+                  ? 'bg-green-400'
                   : 'bg-white/30'
               }`}
             />
@@ -161,4 +154,3 @@ const ResistanceSection = () => {
 }
 
 export default ResistanceSection
-

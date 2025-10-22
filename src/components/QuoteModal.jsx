@@ -1,6 +1,7 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { X, Phone, MessageCircle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button.jsx'
+import installationImage from '../assets/images/installation-process.jpg'
 
 const QuoteModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -13,36 +14,31 @@ const QuoteModal = ({ isOpen, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState('')
-  const whatsappMessage = 'Olá, vim pelo site da Protege Piso Indaiatuba'
-  const whatsappLink = `https://wa.me/5519999340914?text=${encodeURIComponent(whatsappMessage)}`
+  const contactUrl = 'https://eloprotection.com/contact'
+  const webhookUrl = 'https://n8n.unadigital.dev/webhook/eloprotectionorlando'
 
   const formatPhoneNumber = (value) => {
-    const digits = value.replace(/\D/g, '').slice(0, 11)
+    const digits = value.replace(/\D/g, '').slice(0, 10)
     if (!digits) return ''
 
-    if (digits.length <= 2) {
+    if (digits.length < 4) {
       return `(${digits}`
     }
 
-    const ddd = digits.slice(0, 2)
-    const rest = digits.slice(2)
-    let formatted = `(${ddd}) `
+    const area = digits.slice(0, 3)
+    const prefix = digits.slice(3, 6)
+    const line = digits.slice(6, 10)
 
-    if (digits.length <= 10) {
-      if (rest.length <= 4) {
-        return formatted + rest
-      }
-      const middle = rest.slice(0, rest.length - 4)
-      const last = rest.slice(-4)
-      return middle ? `${formatted}${middle}-${last}` : `${formatted}${last}`
+    if (!prefix) {
+      return `(${area}`
     }
 
-    const first = rest.slice(0, 1)
-    const middle = rest.slice(1, 5)
-    const last = rest.slice(5, 9)
-    return `${formatted}${first} ${middle}-${last}`.trim()
-  }
+    if (!line) {
+      return `(${area}) ${prefix}`
+    }
 
+    return `(${area}) ${prefix}-${line}`
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -70,51 +66,54 @@ const QuoteModal = ({ isOpen, onClose }) => {
     const phoneDigits = formData.telefone.replace(/\D/g, '')
 
     if (!formData.nome || !phoneDigits || !formData.metragem || !formData.cidade) {
-      setError('Por favor, preencha todos os campos obrigatórios.')
+      setError('Please fill in all required fields.')
       setIsSubmitting(false)
       return
     }
 
-    if (phoneDigits.length !== 10 && phoneDigits.length !== 11) {
-      setError('Telefone em formato incorreto. Use (DDD) 9 XXXX-XXXX. O 9 adicional pode ser informado ou não.')
+    if (phoneDigits.length !== 10) {
+      setError('Invalid phone number. Use (407) 555-0123 format.')
       setIsSubmitting(false)
       return
     }
 
     try {
-      const response = await fetch('https://n8n.unadigital.dev/webhook/protegeindaiatuba', {
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          nome: formData.nome,
-          telefone: phoneDigits,
-          telefoneFormatado: formData.telefone,
+          name: formData.nome,
+          phone: phoneDigits,
+          phoneFormatted: formData.telefone,
           email: formData.email || null,
-          metragem: formData.metragem,
-          cidade: formData.cidade,
+          areaSquareFeet: formData.metragem,
+          city: formData.cidade,
           timestamp: new Date().toISOString(),
-          source: 'website_protege_piso_indaiatuba'
+          source: 'website_eloprotection_orlando'
         })
       })
 
-      if (response.ok) {
-        window.open(whatsappLink, '_blank')
-        setIsSubmitted(true)
-      } else {
-        throw new Error('Erro ao enviar formulário')
+      if (!response.ok) {
+        throw new Error(`Webhook responded with ${response.status}`)
       }
+
+      setIsSubmitted(true)
     } catch (err) {
-      setError('Erro ao enviar formulário. Tente novamente.')
-      console.error('Erro ao enviar formulário:', err)
+      console.error('Error submitting quote form:', err)
+      setError('We could not send your request. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const handleWhatsApp = () => {
-    window.open(whatsappLink, '_blank')
+  const handleContact = () => {
+    window.open(contactUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleCall = () => {
+    window.open('tel:+15595133708', '_blank', 'noopener,noreferrer')
   }
 
   const resetForm = () => {
@@ -128,171 +127,207 @@ const QuoteModal = ({ isOpen, onClose }) => {
     onClose()
   }
 
-  if (!isOpen) return null
+  if (!isOpen) {
+    return null
+  }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-background rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-xl font-bold text-primary">
-            {isSubmitted ? 'Orçamento Enviado!' : 'Solicitar Orçamento'}
-          </h2>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleClose}
-            className="rounded-full"
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
-
-        {/* Content */}
-        <div className="p-6">
-          {!isSubmitted ? (
-            <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center px-4">
+      <div className="bg-background border border-border rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden transform animate-in fade-in zoom-in duration-300">
+        <div className="grid md:grid-cols-[1.2fr_1fr]">
+          <div className="p-6 sm:p-10">
+            <div className="flex justify-between items-start mb-6">
               <div>
-                <label htmlFor="nome" className="block text-sm font-medium text-foreground mb-2">
-                  Nome Completo *
-                </label>
-                <input
-                  type="text"
-                  id="nome"
-                  name="nome"
-                  value={formData.nome}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-background text-foreground"
-                  placeholder="Seu nome completo"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="telefone" className="block text-sm font-medium text-foreground mb-2">
-                  Telefone/WhatsApp *
-                </label>
-                <input
-                  type="tel"
-                  id="telefone"
-                  name="telefone"
-                  value={formData.telefone}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-background text-foreground"
-                  placeholder="(16) 9 9999-9999"
-                  inputMode="numeric"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                  E-mail (opcional)
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-background text-foreground"
-                  placeholder="seuemail@exemplo.com"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="cidade" className="block text-sm font-medium text-foreground mb-2">
-                  Cidade *
-                </label>
-                <input
-                  type="text"
-                  id="cidade"
-                  name="cidade"
-                  value={formData.cidade}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-background text-foreground"
-                  placeholder="Informe sua cidade"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="metragem" className="block text-sm font-medium text-foreground mb-2">
-                  Metragem (m²) *
-                </label>
-                <input
-                  type="number"
-                  id="metragem"
-                  name="metragem"
-                  value={formData.metragem}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-background text-foreground"
-                  placeholder="Ex: 100"
-                  min="1"
-                  required
-                />
-              </div>
-
-              {error && (
-                <div className="text-red-500 text-sm bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
-                  {error}
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Enviando...
-                  </>
-                ) : (
-                  'Solicitar Orçamento'
-                )}
-              </Button>
-            </form>
-          ) : (
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto">
-                <MessageCircle className="w-8 h-8 text-green-600" />
-              </div>
-              
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  Orçamento enviado com sucesso!
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  Recebemos sua solicitação e entraremos em contato em breve.
+                <h2 className="text-2xl font-bold text-primary mb-2">Request a Quote</h2>
+                <p className="text-muted-foreground">
+                  Share a few details and the Orlando specialists will craft a tailored protection plan.
                 </p>
               </div>
-
-              <Button
-                onClick={handleWhatsApp}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg"
-              >
-                <Phone className="w-4 h-4 mr-2" />
-                Falar no WhatsApp
-              </Button>
-
-              <Button
-                variant="outline"
+              <button
                 onClick={handleClose}
-                className="w-full"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Close quote modal"
               >
-                Fechar
-              </Button>
+                <X className="w-6 h-6" />
+              </button>
             </div>
-          )}
+
+            {!isSubmitted ? (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="nome" className="block text-sm font-semibold text-brand-navy mb-2">
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    value={formData.nome}
+                    onChange={handleInputChange}
+                    className="form-input w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Your name"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="telefone" className="block text-sm font-semibold text-brand-navy mb-2">
+                    Phone (with area code) *
+                  </label>
+                  <input
+                    type="tel"
+                    id="telefone"
+                    name="telefone"
+                    value={formData.telefone}
+                    onChange={handleInputChange}
+                    className="form-input w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="(407) 555-0123"
+                    inputMode="numeric"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="email" className="block text-sm font-semibold text-brand-navy mb-2">
+                    Email (optional)
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="form-input w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="you@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="cidade" className="block text-sm font-semibold text-brand-navy mb-2">
+                    City *
+                  </label>
+                  <input
+                    type="text"
+                    id="cidade"
+                    name="cidade"
+                    value={formData.cidade}
+                    onChange={handleInputChange}
+                    className="form-input w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Which Central Florida city is the project in?"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="metragem" className="block text-sm font-semibold text-brand-navy mb-2">
+                    Area (sq ft) *
+                  </label>
+                  <input
+                    type="number"
+                    id="metragem"
+                    name="metragem"
+                    value={formData.metragem}
+                    onChange={handleInputChange}
+                    className="form-input w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="e.g. 100"
+                    min="1"
+                    required
+                  />
+                </div>
+
+                {error && (
+                  <div className="text-green-600 text-sm bg-green-100 dark:bg-white/10 p-3 rounded-lg">
+                    {error}
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white dark:text-primary font-semibold py-3 rounded-lg"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Request'
+                  )}
+                </Button>
+              </form>
+            ) : (
+              <div className="text-center space-y-4">
+                <div className="w-16 h-16 bg-brand-red-soft rounded-full flex items-center justify-center mx-auto">
+                  <MessageCircle className="w-8 h-8 text-secondary" />
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    Quote request logged!
+                  </h3>
+                  <p className="text-muted-foreground mb-4">
+                    Our Orlando team will review your details and follow up shortly.
+                  </p>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <Button
+                    onClick={handleCall}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white dark:text-primary font-semibold py-3 rounded-lg"
+                  >
+                    <Phone className="w-4 h-4 mr-2" />
+                    Call +1 (559) 513-3708
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={handleContact}
+                    className="w-full"
+                  >
+                    Visit eloprotection.com/contact
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={handleClose}
+                    className="w-full sm:col-span-2"
+                  >
+                    Close
+                  </Button>
+                </div>
+
+              </div>
+            )}
+          </div>
+
+          <div className="hidden md:block bg-gradient-to-br from-black/80 via-black/60 to-black/80 text-white relative">
+            <div
+              className="absolute inset-0 bg-cover bg-center opacity-30"
+              style={{ backgroundImage: `url(${installationImage})` }}
+            />
+            <div className="relative z-10 h-full flex flex-col justify-between p-10 space-y-6">
+              <div>
+                <h3 className="text-xl font-semibold mb-4 text-brand-navy">What to expect next</h3>
+                <ul className="space-y-3 text-sm text-brand-navy opacity-90">
+                  <li>- A specialist will contact you within one business day.</li>
+                  <li>- We schedule a site visit to evaluate your protection needs.</li>
+                  <li>- You receive a tailored proposal from the Orlando team with detailed coverage.</li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-sm text-brand-navy">
+                  Elo Protection covers floors, stairs, countertops, and other finishes with reusable panels that resist water, impact, heavy loads, and flame.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Footer */}
         {!isSubmitted && (
           <div className="px-6 pb-6">
             <p className="text-xs text-muted-foreground text-center">
-              Seus dados estão seguros e serão usados apenas para contato sobre o orçamento.
+              Your information is secure and will only be used to contact you about this quote.
             </p>
           </div>
         )}
@@ -302,6 +337,10 @@ const QuoteModal = ({ isOpen, onClose }) => {
 }
 
 export default QuoteModal
+
+
+
+
 
 
 
